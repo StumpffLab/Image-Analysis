@@ -1,0 +1,53 @@
+%This script will process plot profile data from ImageJ to find the distance between maximum signal intensity in each half spindle
+%It requires plot profile data from each frame in adjacent columns in an Excel spreadsheet with no headers
+
+Anaphase = xlsread('YourFile');
+[m,n] = size(Anaphase);
+i=1
+j=1
+
+%Define alternating columns as X and Y plot profile coordinates
+
+while i<n
+    cellx = rmmissing(Anaphase(:,(i)))
+    celly = rmmissing(Anaphase(:, (i+1)))
+    [s, t] = size(cellx);
+
+%Divide each data set into two half-spindle plots
+    
+    if mod(s,2)==0
+        s=s
+        a = ((s/2))
+        FirstHalfx = cellx((1:a));
+        SecondHalfx = cellx(((a+1):(s)));
+    
+        FirstHalfy= celly((1:a));
+        SecondHalfy = celly(((a+1):(s)));
+    else
+        s = s+1
+        a = ((s/2))
+    
+        FirstHalfx = cellx((1:a));
+        SecondHalfx = cellx(((a+1):(s-1)));
+    
+        FirstHalfy= celly((1:a));
+        SecondHalfy = celly(((a+1):(s-1)));
+    end
+
+%Find maxima within each half-spindle  
+    
+    Max1 = max(FirstHalfy)
+    Position= find(FirstHalfy==Max1)
+    Result1(j) = FirstHalfx(Position)
+    
+    Max2 = max(SecondHalfy)
+    Position2= find(SecondHalfy==Max2)
+    Result2(j) = SecondHalfx(Position2)
+
+%Find distance between maxima
+    
+    Distance(j)=(Result2(j)-Result1(j));
+    
+    j=j+1
+    i=i+2
+end
