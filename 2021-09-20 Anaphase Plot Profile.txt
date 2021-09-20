@@ -1,0 +1,17 @@
+// This macro will rotate an image of a mitotic cell so that the long axis through the spindle is horizontal, then measure signal intensity along that line (plot profile). 
+// The macro requires a line selection drawn through the spindle poles.
+
+macro "2020-04-29 Rotate Plot Profile Shortcut [6]" 
+{getLine(x1, y1, x2, y2, width);
+if (x1==-1)
+    exit("This macro requires a straight line selection");
+run("Measure");
+theta= getResult("Angle");
+W = sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));   // width of rectangle == length of line selection
+H =230;			                     // height of rectangle 
+xc = minOf(x1,x2)+abs(x2-x1)/2;              // line center in x
+yc = maxOf(y1,y2)-abs(y2-y1)/2;	             // line center in y
+makeRectangle(xc-0.5*W,yc-0.5*H,W,H);
+run("Arbitrarily...", "angle="+theta+" interpolate");
+profile = getProfile();
+run("Plot Profile");}
